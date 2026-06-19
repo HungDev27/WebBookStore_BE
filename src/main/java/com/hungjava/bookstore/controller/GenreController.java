@@ -21,7 +21,7 @@ public class GenreController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<GenreResponse>> create(@Valid @RequestBody GenreRequest request) {
-        return ResponseEntity.ok(ApiResponse.<GenreResponse>builder()
+        return ResponseEntity.status(201).body(ApiResponse.<GenreResponse>builder()
                 .success(true)
                 .data(genreService.create(request))
                 .build());
