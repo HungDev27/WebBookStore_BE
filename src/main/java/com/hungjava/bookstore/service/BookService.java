@@ -21,5 +21,6 @@ public interface BookService {
     );
     BookResponse getById(Integer id);
     BookResponse updateBook( Integer id,BookUpdateRequest request);
+    void deleteById(Integer id);
 
 }

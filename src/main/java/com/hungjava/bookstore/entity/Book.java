@@ -47,6 +47,8 @@ public class Book {
     @Column(name = "discount_percent")
     int discountPercent; // Giảm giá bao nhiêu %
 
+    String status;
+
     @ManyToMany
     @JoinTable(name = "book_genre",
             joinColumns = @JoinColumn(name = "book_id"),

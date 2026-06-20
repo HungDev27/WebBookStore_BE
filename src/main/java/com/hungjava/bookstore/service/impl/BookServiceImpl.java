@@ -21,6 +21,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import com.hungjava.bookstore.repository.OrderDetailRepository;
+import com.hungjava.bookstore.repository.CartItemRepository;
+import com.hungjava.bookstore.repository.FavoriteBookRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -40,6 +43,9 @@ public class BookServiceImpl implements BookService {
     CloudinaryService cloudinaryService;
     GenreRepository genreRepository;
     BookMapper bookMapper;
+    OrderDetailRepository orderDetailRepository;
+    CartItemRepository cartItemRepository;
+    FavoriteBookRepository favoriteBookRepository;
 
     @Override
     @Transactional
@@ -160,6 +166,43 @@ public class BookServiceImpl implements BookService {
         Book updatedBook = bookRepository.save(book);
 
         return bookMapper.toBookResponse(updatedBook);
+    }
+
+    @Override
+    @Transactional
+    public void deleteById(Integer id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(()-> new ApiException(ErrorCode.BOOK_NOT_FOUND));
+
+        boolean checkOrdered = orderDetailRepository.existsByBookId(id);
+        if (checkOrdered) {
+            book.setStatus("INACTIVE");
+            bookRepository.save(book);
+            return;
+        }
+
+        List<Image> bookImages = imageRepository.findByBookId(id);
+        for (Image img : bookImages) {
+            if (img.getUrlImage() != null) {
+                try {
+                    String publicId = cloudinaryService.extractPublicIdFromUrl(img.getUrlImage());
+                    if (publicId != null) {
+                        cloudinaryService.deleteFile(publicId);
+                    }
+                } catch (Exception e) {
+                    log.error("Không thể xóa hình ảnh: {}", img.getUrlImage(), e);
+                }
+            }
+        }
+
+        imageRepository.deleteAll(bookImages);
+        cartItemRepository.deleteByBookId(id);
+        favoriteBookRepository.deleteByBookId(id);
+        
+        book.getListImages().clear();
+        book.getListGenres().clear();
+        
+        bookRepository.delete(book);
     }
 }
 

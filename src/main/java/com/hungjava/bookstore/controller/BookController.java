@@ -27,7 +27,8 @@ import java.math.BigDecimal;
 public class BookController {
     BookService bookService;
 
-    // POST: Sử dụng @ModelAttribute thay vì @RequestBody vì BookRequest chứa danh sách file ảnh MultipartFile)
+    // POST: Sử dụng @ModelAttribute thay vì @RequestBody vì BookRequest chứa danh
+    // sách file ảnh MultipartFile)
     @PostMapping
     public ResponseEntity<ApiResponse<BookResponse>> create(@Valid @ModelAttribute BookCreateRequest request) {
         return ResponseEntity.status(201).body(ApiResponse.<BookResponse>builder()
@@ -55,7 +56,8 @@ public class BookController {
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        PageResponse<BookListResponse> data = bookService.getAllBooks(search, genreId, minPrice, maxPrice, rating, pageable);
+        PageResponse<BookListResponse> data = bookService.getAllBooks(search, genreId, minPrice, maxPrice, rating,
+                pageable);
         return ResponseEntity.ok(ApiResponse.<PageResponse<BookListResponse>>builder()
                 .success(true)
                 .data(data)
@@ -71,19 +73,20 @@ public class BookController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<BookResponse>> update(@PathVariable int id, @Valid @ModelAttribute BookUpdateRequest request) {
+    public ResponseEntity<ApiResponse<BookResponse>> update(@PathVariable int id,
+            @Valid @ModelAttribute BookUpdateRequest request) {
         return ResponseEntity.ok(ApiResponse.<BookResponse>builder()
                 .success(true)
                 .data(bookService.updateBook(id, request))
                 .build());
     }
 
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable int id) {
-//        bookService.delete(id);
-//        return ResponseEntity.ok(ApiResponse.<Void>builder()
-//                .success(true)
-//                .build());
-//    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable int id) {
+        bookService.deleteById(id);
+        return ResponseEntity.ok(ApiResponse.<Void>builder()
+                .success(true)
+                .build());
+    }
 
 }
