@@ -2,11 +2,14 @@ package com.hungjava.bookstore.service.impl;
 
 import com.hungjava.bookstore.dto.PageResponse;
 import com.hungjava.bookstore.dto.request.BookCreateRequest;
+import com.hungjava.bookstore.dto.request.BookUpdateRequest;
 import com.hungjava.bookstore.dto.response.BookListResponse;
 import com.hungjava.bookstore.dto.response.BookResponse;
 import com.hungjava.bookstore.entity.Book;
 import com.hungjava.bookstore.entity.Genre;
 import com.hungjava.bookstore.entity.Image;
+import com.hungjava.bookstore.exception.ApiException;
+import com.hungjava.bookstore.exception.ErrorCode;
 import com.hungjava.bookstore.mapper.BookMapper;
 import com.hungjava.bookstore.repository.BookProjection;
 import com.hungjava.bookstore.repository.BookRepository;
@@ -17,6 +20,7 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,6 +32,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Slf4j
 public class BookServiceImpl implements BookService {
 
     BookRepository bookRepository;
@@ -91,6 +96,70 @@ public class BookServiceImpl implements BookService {
         );
         Page<BookListResponse> responsePage = pageData.map(bookMapper::toBookListResponse);
         return new PageResponse<>(responsePage);
+    }
+
+    @Override
+    public BookResponse getById(Integer id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(()-> new ApiException(ErrorCode.BOOK_NOT_FOUND));
+
+        return bookMapper.toBookResponse(book);
+    }
+
+    @Override
+    @Transactional
+    public BookResponse updateBook(Integer id, BookUpdateRequest request) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(()-> new ApiException(ErrorCode.BOOK_NOT_FOUND));
+
+        book.setName(request.getName());
+        book.setAuthor(request.getAuthor());
+        book.setDescription(request.getDescription());
+        book.setListPrice(request.getListPrice());
+        book.setSellPrice(request.getSellPrice());
+        book.setQuantity(request.getQuantity());
+        book.setDiscountPercent(request.getDiscountPercent() != null ? request.getDiscountPercent() : 0);
+
+        book.getListGenres().clear();
+        if (request.getGenreIds() != null && !request.getGenreIds().isEmpty()) {
+            List<Genre> newGenres = genreRepository.findAllById(request.getGenreIds());
+            book.getListGenres().addAll(newGenres);
+        }
+
+        //Xử lý ảnh
+        if (request.getImages() != null && !request.getImages().isEmpty()) {
+            List<Image> oldImages = imageRepository.findByBookId(id);
+            for (Image img : oldImages) {
+                try {
+                    String publicId = cloudinaryService.extractPublicIdFromUrl(img.getUrlImage());
+                    if (publicId != null) {
+                        cloudinaryService.deleteFile(publicId);
+                    }
+                } catch (Exception e) {
+                    log.error("Xóa ảnh trên Cloudinary thất bại cho URL: {}", img.getUrlImage(), e);
+                }
+            }
+
+            imageRepository.deleteByBookId(id);
+
+            List<String> imageUrls = cloudinaryService.uploadMultipleFiles(request.getImages(), "books");
+
+            List<Image> newImages = new ArrayList<>();
+            for (int i = 0; i < imageUrls.size(); i++) {
+                newImages.add(Image.builder()
+                        .name("image_" + book.getId() + "_" + i)
+                        .urlImage(imageUrls.get(i))
+                        .isIcon(i == 0)
+                        .book(book)
+                        .build());
+            }
+            List<Image> savedImages = imageRepository.saveAll(newImages);
+            book.setListImages(savedImages);
+        }
+
+        Book updatedBook = bookRepository.save(book);
+
+        return bookMapper.toBookResponse(updatedBook);
     }
 }
 

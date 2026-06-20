@@ -2,6 +2,7 @@ package com.hungjava.bookstore.service;
 
 import com.hungjava.bookstore.dto.PageResponse;
 import com.hungjava.bookstore.dto.request.BookCreateRequest;
+import com.hungjava.bookstore.dto.request.BookUpdateRequest;
 import com.hungjava.bookstore.dto.response.BookListResponse;
 import com.hungjava.bookstore.dto.response.BookResponse;
 import org.springframework.data.domain.Pageable;
@@ -18,4 +19,7 @@ public interface BookService {
             Integer rating,
             Pageable pageable
     );
+    BookResponse getById(Integer id);
+    BookResponse updateBook( Integer id,BookUpdateRequest request);
+
 }

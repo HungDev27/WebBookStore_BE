@@ -70,7 +70,7 @@ public class CloudinaryService {
                 // Bỏ phần số phiên bản (version) nếu có, ví dụ: "v1718812345/"
                 remaining = remaining.substring(remaining.indexOf("/") + 1);
             }
-            // Bỏ đuôi định dạng file (.jpg, .png)
+            // Bỏ+đuôi định dạng file (.jpg, .png)
             return remaining.substring(0, remaining.lastIndexOf("."));
         } catch (Exception e) {
             return null;

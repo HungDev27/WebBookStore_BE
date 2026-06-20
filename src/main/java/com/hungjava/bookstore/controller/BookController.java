@@ -3,6 +3,7 @@ package com.hungjava.bookstore.controller;
 import com.hungjava.bookstore.dto.ApiResponse;
 import com.hungjava.bookstore.dto.PageResponse;
 import com.hungjava.bookstore.dto.request.BookCreateRequest;
+import com.hungjava.bookstore.dto.request.BookUpdateRequest;
 import com.hungjava.bookstore.dto.response.BookListResponse;
 import com.hungjava.bookstore.dto.response.BookResponse;
 import com.hungjava.bookstore.service.BookService;
@@ -61,28 +62,28 @@ public class BookController {
                 .build());
     }
 
-    /* @GetMapping("/{id}")
-     * public ResponseEntity<ApiResponse<BookResponse>> getById(@PathVariable int id) {
-     *     return ResponseEntity.ok(ApiResponse.<BookResponse>builder()
-     *             .success(true)
-     *             .data(bookService.getById(id))
-     *             .build());
-     * }
-     *
-     * @PutMapping("/{id}")
-     * public ResponseEntity<ApiResponse<BookResponse>> update(@PathVariable int id, @Valid @ModelAttribute BookRequest request) {
-     *     return ResponseEntity.ok(ApiResponse.<BookResponse>builder()
-     *             .success(true)
-     *             .data(bookService.update(id, request))
-     *             .build());
-     * }
-     *
-     * @DeleteMapping("/{id}")
-     * public ResponseEntity<ApiResponse<Void>> delete(@PathVariable int id) {
-     *     bookService.delete(id);
-     *     return ResponseEntity.ok(ApiResponse.<Void>builder()
-     *             .success(true)
-     *             .build());
-     * }
-     */
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<BookResponse>> getById(@PathVariable int id) {
+        return ResponseEntity.ok(ApiResponse.<BookResponse>builder()
+                .success(true)
+                .data(bookService.getById(id))
+                .build());
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<BookResponse>> update(@PathVariable int id, @Valid @ModelAttribute BookUpdateRequest request) {
+        return ResponseEntity.ok(ApiResponse.<BookResponse>builder()
+                .success(true)
+                .data(bookService.updateBook(id, request))
+                .build());
+    }
+
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable int id) {
+//        bookService.delete(id);
+//        return ResponseEntity.ok(ApiResponse.<Void>builder()
+//                .success(true)
+//                .build());
+//    }
+
 }
