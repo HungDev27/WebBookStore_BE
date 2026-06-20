@@ -17,6 +17,8 @@ public enum ErrorCode {
     CATEGORY_NOT_FOUND("Không tìm thấy danh mục", HttpStatus.NOT_FOUND),
     REVIEW_NOT_FOUND("Không tìm thấy đánh giá", HttpStatus.NOT_FOUND),
     GENRE_NOT_FOUND("Không tìm thấy thể loại", HttpStatus.NOT_FOUND),
+    DELIVERY_NOT_FOUND("Không tìm thấy phương thức vận chuyển", HttpStatus.NOT_FOUND),
+    DELIVERY_IN_USE("Phương thức vận chuyển đã được sử dụng trong đơn hàng, không thể xóa", HttpStatus.BAD_REQUEST),
 
     //Lỗi hệ thống & phân quyền
     UNAUTHORIZED("Bạn chưa đăng nhập", HttpStatus.UNAUTHORIZED),
