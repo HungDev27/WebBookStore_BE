@@ -42,7 +42,7 @@ public class Order {
     @Column(name = "total_price")
     BigDecimal totalPrice;
 
-    String status; // Trạng thái của đơn hàng
+    String status; // PENDING (Chờ xử lý),SHIPPING (Đang giao),DELIVERED (Đã giao),CANCELED
 
     String note; // Ghi chú
 
