@@ -35,6 +35,16 @@ dependencies {
 	//Cloudinary
 	implementation 'com.cloudinary:cloudinary-http5:2.2.0'
 
+	// Cung cấp các tính năng xác thực OAuth2 bằng JWT được tích hợp sẵn rất mạnh của Spring
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+	// Mật mã hoá mật khẩu (BCrypt)
+	implementation 'org.springframework.security:spring-security-crypto'
+
+	//	Mail
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+//	implementation 'jakarta.mail:jakarta.mail-api:2.1.2'
+//	implementation 'org.eclipse.adoptium:angus-mail:2.0.2'
+
 
 	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

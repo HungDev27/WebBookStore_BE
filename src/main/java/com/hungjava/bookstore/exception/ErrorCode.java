@@ -26,9 +26,15 @@ public enum ErrorCode {
     OUT_OF_STOCK("Số lượng sách trong kho không đủ", HttpStatus.BAD_REQUEST),
     ORDER_NOT_FOUND("Không tìm thấy đơn đặt hàng",HttpStatus.NOT_FOUND),
     CANNOT_CANCEL_ORDER("Đơn hàng đang giao hoặc đã giao, không thể hủy",HttpStatus.BAD_REQUEST),
+    INVALID_USER("Tài khoản không tồn tại", HttpStatus.NOT_FOUND),
+    INVALID_PASSWORD("Mật khẩu không chính xác", HttpStatus.BAD_REQUEST),
+    USER_ALREADY_EXISTS("Tên đăng nhập đã tồn tại", HttpStatus.BAD_REQUEST),
+    EMAIL_ALREADY_EXISTS("Email đã tồn tại", HttpStatus.BAD_REQUEST),
     //Lỗi hệ thống & phân quyền
     UNAUTHORIZED("Bạn chưa đăng nhập", HttpStatus.UNAUTHORIZED),
-    FORBIDDEN("Bạn không có quyền truy cập", HttpStatus.FORBIDDEN);
+    FORBIDDEN("Bạn không có quyền truy cập", HttpStatus.FORBIDDEN),
+    USER_INACTIVE("Tài khoản chưa được kích hoạt", HttpStatus.BAD_REQUEST),
+    INVALID_ACTIVATION_TOKEN("Mã kích hoạt không hợp lệ hoặc đã hết hạn", HttpStatus.BAD_REQUEST);
 
     String message;
     HttpStatus status;
