@@ -45,6 +45,8 @@ dependencies {
 //	implementation 'jakarta.mail:jakarta.mail-api:2.1.2'
 //	implementation 'org.eclipse.adoptium:angus-mail:2.0.2'
 
+	//Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

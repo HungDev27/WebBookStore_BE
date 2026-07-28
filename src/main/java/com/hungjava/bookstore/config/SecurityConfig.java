@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -28,11 +30,15 @@ public class SecurityConfig {
 
         httpSecurity.authorizeHttpRequests(request -> {
             request
+                    // Cho browser gửi preflight request không cần JWT
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers(apiPrefix + "/auth/**").permitAll()
                     .anyRequest().authenticated();
         });
 
-        httpSecurity.csrf(AbstractHttpConfigurer::disable);
+        httpSecurity
+                .cors(Customizer.withDefaults()) // Dùng CORS trong WebConfig
+                .csrf(AbstractHttpConfigurer::disable);
 
         // Cài đặt OAuth2 Resource Server để Spring tự động bắt JWT từ Header và kiểm tra
         httpSecurity.oauth2ResourceServer(oauth2 ->
@@ -48,7 +54,8 @@ public class SecurityConfig {
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix(""); // Không prepend thêm "ROLE_" vì tên quyền trong DB đã là "ROLE_CUSTOMER"
+        jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName("role"); // Map từ claim "role" trong JWT thay vì "scope" hay "scp" mặc định
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
 

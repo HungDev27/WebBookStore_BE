@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CartItemRepository extends JpaRepository<CartItem, Integer> {
@@ -22,5 +23,7 @@ public interface CartItemRepository extends JpaRepository<CartItem, Integer> {
     @Query("DELETE FROM CartItem c WHERE c.user.id = :userId")
     void deleteByUserId(@Param("userId") Integer userId);
 
+    Optional<CartItem> findByUserIdAndBookId(Integer userId, Integer bookId);
 
+    List<CartItem> findByUserId(Integer userId);
 }

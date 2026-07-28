@@ -1,5 +1,10 @@
 package com.hungjava.bookstore.service;
 
-public interface UserService {
+import com.hungjava.bookstore.dto.response.UserResponse;
+import com.hungjava.bookstore.entity.User;
 
+public interface UserService {
+    User findByUsername(String username);
+    UserResponse getMyProfile();
 }
+

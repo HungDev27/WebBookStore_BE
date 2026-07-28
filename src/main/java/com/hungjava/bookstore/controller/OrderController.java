@@ -7,10 +7,12 @@ import com.hungjava.bookstore.dto.request.UpdateOrderStatusRequest;
 import com.hungjava.bookstore.dto.response.CancelOrderResponse;
 import com.hungjava.bookstore.dto.response.OrderResponse;
 import com.hungjava.bookstore.service.OrderService;
+import com.hungjava.bookstore.utils.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,14 +25,10 @@ public class OrderController {
     OrderService orderService;
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('ROLE_CUSTOMER')")
     public ResponseEntity<ApiResponse<OrderResponse>> createOrderCOD(@Valid @RequestBody OrderRequest orderRequest) {
-        // Lấy userId từ Context Đăng nhập (JwtToken / Session)
-        // Spring Security:
-        // userId = ((UserPrincipal)
-        // SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
-        Integer mockUserId = 1; // Tạm thời hardcode
-
-        OrderResponse response = orderService.createOrderCOD(mockUserId, orderRequest);
+        Integer userId = SecurityUtils.getCurrentUserId();
+        OrderResponse response = orderService.createOrderCOD(userId, orderRequest);
 
         return ResponseEntity.status(201).body(ApiResponse.<OrderResponse>builder()
                 .success(true)
@@ -39,10 +37,10 @@ public class OrderController {
     }
 
     @PutMapping("/cancel-order")
+    @PreAuthorize("hasAnyAuthority('ROLE_CUSTOMER', 'ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<?>> cancelOrder(@Valid @RequestBody CancelOrderRequest request) {
-        Integer mockUserId = 1;
-
-        orderService.cancelOrderCOD(request, mockUserId);
+        Integer userId = SecurityUtils.getCurrentUserId();
+        orderService.cancelOrderCOD(request, userId);
 
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
@@ -53,9 +51,8 @@ public class OrderController {
     }
 
     @PutMapping("/update-status-order")
-    public ResponseEntity<ApiResponse<?>> cancelOrder(@Valid @RequestBody UpdateOrderStatusRequest request) {
-        Integer mockUserId = 1;
-
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<ApiResponse<?>> updateStatusOrder(@Valid @RequestBody UpdateOrderStatusRequest request) {
         OrderResponse response = orderService.updateStatusOrderCOD(request);
 
         return ResponseEntity.ok(ApiResponse.builder()

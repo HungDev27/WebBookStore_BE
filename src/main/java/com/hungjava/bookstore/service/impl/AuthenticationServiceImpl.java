@@ -182,6 +182,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .expirationTime(new Date(
                         Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
                 ))
+                .claim("userId", user.getId())
                 .claim("role", getRoles(user))
                 .jwtID(UUID.randomUUID().toString()) // Random 1 ID ngẫu nhiên cho Token để hỗ trợ Logout
                 .build();
